@@ -78,6 +78,10 @@ namespace Joma.Models
                 {
                     var result = reader.ReadToEnd();
                     var url = Regex.Match(result, @"(http:\/\/sbg\.jp\/cp\/exchange\/[\d\w\/]+)").Groups[1].Value;
+
+                    if (string.IsNullOrWhiteSpace(url))
+                        throw new UriFormatException();
+
                     return url;
                 }
             }

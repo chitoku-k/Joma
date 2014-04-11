@@ -14,7 +14,7 @@
         <Border BorderThickness="0 0 1 0" BorderBrush="#c4c4c4" Margin="10">
             <DockPanel>
                 <DockPanel Margin="0 0 10 5" DockPanel.Dock="Top">
-                    <Button Content="Joma の抽選に応募する" VerticalAlignment="Top" DockPanel.Dock="Right" Command="{Binding RunCommand}" Padding="16,1" Margin="10,0,0,0"/>
+                    <Button Content="Joma の抽選に応募する" VerticalAlignment="Top" DockPanel.Dock="Right" Command="{Binding RunCommand}" Padding="16,1" Margin="10 0 0 0"/>
                     <TextBlock DockPanel.Dock="Right" VerticalAlignment="Center">回</TextBlock>
                     <TextBox DockPanel.Dock="Left" Text="{Binding Count}" Margin="0,0,5,0" TextAlignment="Right"/>
                 </DockPanel>
@@ -26,9 +26,9 @@
         </Border>
         <DockPanel Grid.Column="1">
             <DockPanel>
-                <Button Margin="0,10,10,5" Content="バーコードの画像をダウンロードする" DockPanel.Dock="Top" Command="{Binding DownloadBarcodesCommand}"/>
+                <Button Margin="0 10 10 5" Content="バーコードの画像をダウンロードする" DockPanel.Dock="Top" Command="{Binding DownloadBarcodesCommand}"/>
                 <TextBlock Margin="0 0 10 0" DockPanel.Dock="Top">ログ:</TextBlock>
-                <ListBox Margin="0,0,10,10" ItemsSource="{Binding BarcodesLogs}"/>
+                <ListBox Margin="0 0 10 10" ItemsSource="{Binding BarcodesLogs}"/>
             </DockPanel>
         </DockPanel>
     </Grid>
