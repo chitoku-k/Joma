@@ -1,5 +1,8 @@
-﻿using System;
+﻿using Joma.Win32;
+using System;
+using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -40,15 +43,20 @@ namespace Joma.Models
                 if (response.ResponseUri.AbsoluteUri == "https://gift.jomajoma.com/drawing/index.php")
                     return null;
                 else
-                    return await PostConfirmApplyPage(random.Next(1000000000, int.MaxValue), response.ResponseUri.AbsoluteUri);
+                    return await PostConfirmApplyPage(response.ResponseUri.AbsoluteUri);
             }
         }
 
-        private static async Task<string> PostConfirmApplyPage(int code, string referer)
+        private static async Task<string> PostConfirmApplyPage(string referer)
         {
-            using (var response = await PostData("https://gift.jomajoma.com/apply/index.php?type=rgst", "gete_a=" + code + "106", referer))
+            var code = string.Format("{0}{1}106", random.Next(10000, 99999), random.Next(10000, 99999));
+            using (var response = await PostData("https://gift.jomajoma.com/apply/index.php?type=rgst", "gete_a=" + code, referer))
             {
-                return await PostApplyPage(response.ResponseUri.AbsoluteUri);
+                var cookies = response.Cookies.Cast<Cookie>().ToArray<Cookie>();
+                Array.ForEach(cookies, x => NativeMethods.InternetSetCookie(response.ResponseUri.AbsoluteUri, x.Name, x.Value));
+                Process.Start("iexplore", "https://gift2.jomajoma.com/apply/tw/?flg=tw_reg");
+                return "";
+                //return await PostApplyPage(response.ResponseUri.AbsoluteUri);
             }
         }
 
@@ -72,18 +80,16 @@ namespace Joma.Models
         private static async Task<string> PostConfirmMailApplyFormPage(string referer)
         {
             using (var response = await PostData("https://gift.jomajoma.com/apply/confirm.php", "regist.x=0&regist.y=0&regist=", referer))
+            using (var responseStream = response.GetResponseStream())
+            using (var reader = new StreamReader(responseStream, Encoding.UTF8))
             {
-                using (var responseStream = response.GetResponseStream())
-                using (var reader = new StreamReader(responseStream, Encoding.UTF8))
-                {
-                    var result = reader.ReadToEnd();
-                    var url = Regex.Match(result, @"(http:\/\/sbg\.jp\/cp\/exchange\/[\d\w\/]+)").Groups[1].Value;
+                var result = reader.ReadToEnd();
+                var url = Regex.Match(result, @"(http:\/\/sbg\.jp\/cp\/exchange\/[\d\w\/]+)").Groups[1].Value;
 
-                    if (string.IsNullOrWhiteSpace(url))
-                        throw new UriFormatException();
+                if (string.IsNullOrWhiteSpace(url))
+                    throw new UriFormatException();
 
-                    return url;
-                }
+                return url;
             }
         }
     }
