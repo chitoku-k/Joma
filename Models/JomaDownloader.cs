@@ -25,7 +25,12 @@ namespace Joma.Models
 
         private static async Task DownloadBarcodeImage(string number, string code)
         {
-            var path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory), "Joma", number + ".gif");
+            var path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory), "Joma");
+
+            if (!Directory.Exists(path))
+                Directory.CreateDirectory(path);
+
+            path = Path.Combine(path, number + ".gif");
             await new WebClient().DownloadFileTaskAsync("http://sbg.jp/nw7/303/100/0/" + code + ".gif", path);
         }
     }

@@ -1,5 +1,6 @@
 ﻿using Joma.Win32;
 using System;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -32,6 +33,19 @@ namespace Joma.Models
             }
         }
 
+        public static void OpenApplyPage(ApplyPageType type)
+        {
+            switch (type)
+            {
+                case ApplyPageType.Twitter:
+                    Process.Start("https://gift2.jomajoma.com/apply/tw/?flg=tw_reg");
+                    break;
+                case ApplyPageType.Facebook:
+                    Process.Start("https://gift2.jomajoma.com/apply/fb/?flg=fb_reg");
+                    break;
+            }
+        }
+
         public static async Task<string> GetGiftPage()
         {
             var request = HttpWebRequest.Create("https://gift.jomajoma.com/drawing/index2.php") as HttpWebRequest;
@@ -50,13 +64,10 @@ namespace Joma.Models
         private static async Task<string> PostConfirmApplyPage(string referer)
         {
             var code = string.Format("{0}{1}106", random.Next(10000, 99999), random.Next(10000, 99999));
+
             using (var response = await PostData("https://gift.jomajoma.com/apply/index.php?type=rgst", "gete_a=" + code, referer))
             {
-                var cookies = response.Cookies.Cast<Cookie>().ToArray<Cookie>();
-                Array.ForEach(cookies, x => NativeMethods.InternetSetCookie(response.ResponseUri.AbsoluteUri, x.Name, x.Value));
-                Process.Start("iexplore", "https://gift2.jomajoma.com/apply/tw/?flg=tw_reg");
-                return "";
-                //return await PostApplyPage(response.ResponseUri.AbsoluteUri);
+                return await PostApplyPage(response.ResponseUri.AbsoluteUri);
             }
         }
 
@@ -71,6 +82,7 @@ namespace Joma.Models
         private static async Task<string> PostMailApplyFormPage(string referer)
         {
             var info = "mail01=your_email%2bjoma" + random.Next() + "@gmail.com&pass01=your_password&pass02=your_password&regist=";
+
             using (var response = await PostData("https://gift.jomajoma.com/apply/form.php", info, referer))
             {
                 return await PostConfirmMailApplyFormPage(response.ResponseUri.AbsoluteUri);
@@ -92,5 +104,11 @@ namespace Joma.Models
                 return url;
             }
         }
+    }
+
+    public enum ApplyPageType
+    {
+        Twitter,
+        Facebook
     }
 }

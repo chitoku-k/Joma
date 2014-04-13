@@ -16,6 +16,13 @@ namespace Joma.ViewModels
             set { _RunCommand = value; }
         }
 
+        private RelayCommand _OpenApplyPageCommand;
+        public RelayCommand OpenApplyPageCommand
+        {
+            get { return _OpenApplyPageCommand ?? (_OpenApplyPageCommand = new RelayCommand(OpenApplyPage)); }
+            set { _OpenApplyPageCommand = value; }
+        }
+
         private RelayCommand _DownloadBarcodesCommand;
         public RelayCommand DownloadBarcodesCommand
         {
@@ -47,6 +54,29 @@ namespace Joma.ViewModels
             {
                 _Successes = value; 
                 PropertyChanged(this, new PropertyChangedEventArgs("Successes"));
+            }
+        }
+
+        private void OpenApplyPage(object parameter)
+        {
+            try
+            {
+                switch (parameter as string)
+                {
+                    case "Twitter":
+                        JomaChallenge.OpenApplyPage(ApplyPageType.Twitter);
+                        break;
+                    case "Facebook":
+                        JomaChallenge.OpenApplyPage(ApplyPageType.Facebook);
+                        break;
+                    default:
+                        throw new ArgumentException();
+                }
+                Logs.Insert(0, "アタリ");
+            }
+            catch (Exception ex)
+            {
+                Logs.Insert(0, string.Format("失敗 ({0})", ex.GetType().FullName));
             }
         }
 
